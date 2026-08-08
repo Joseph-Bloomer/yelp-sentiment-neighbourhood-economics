@@ -1,0 +1,50 @@
+# Requirements — Yelp sentiment → neighbourhood economics (MSc dissertation)
+# Generated 2026-08-08 by an AST scan of every import in config.py, pipeline/,
+# scripts/, and the notebooks' code cells — not a pip freeze.
+#
+# Versions are pinned to the laptop environment (Python 3.13, CPU) that ran
+# stages 1-3, 4a, 5-6 and all scripts/notebooks — EXCEPT the three scoring pins
+# marked "cluster", which are deliberately locked to the Linux A40 GPU
+# environment that ran the full 4b/4c passes. The cluster and laptop pins were
+# never one environment: a single `pip install -r` on Windows will fail on the
+# torch/vllm lines (see README, "Where each stage runs").
+
+# --- Core data handling ---
+pandas==3.0.3
+numpy==2.4.6
+pyarrow==24.0.0
+
+# --- Geospatial (stages 1, 5, 6) ---
+geopandas==1.1.3
+pygris==0.2.1
+
+# --- Census API / HTTP (stage 3; stage 4c server backend) ---
+requests==2.34.2
+
+# --- Plotting ---
+matplotlib==3.10.9
+
+# --- NLP scoring ---
+vaderSentiment==3.3.2   # stage 4a (laptop)
+transformers==4.51.3    # stages 4b/4c — cluster pin, do not float
+--extra-index-url https://download.pytorch.org/whl/cu124
+torch==2.6.0+cu124      # stages 4b/4c — cluster pin (CUDA 12.4 build), do not float
+vllm==0.8.5             # stage 4c — cluster pin, do not float; Linux-only
+                        # (no Windows wheels; vLLM 0.8.x has no Python 3.13 support)
+
+# --- Modelling & stats (stages 5-6, scripts) ---
+scikit-learn==1.9.0
+scipy==1.17.1
+
+# --- Config & runtime ---
+python-dotenv==1.2.2
+psutil==7.2.2           # stage 2 memory telemetry
+
+# --- Notebooks ---
+ipython==9.14.1         # imported by stage6_secondary_analyses.ipynb (display)
+# jupyter               # not imported by any file, but required to EXECUTE the
+                        # .ipynb notebooks — install it if re-running them
+
+# Dropped from the old unpinned requirements (not imported by the copied code):
+# - shapely: never imported directly; installed transitively by geopandas
+# - cenpy: unused — stage 3 calls the Census API via requests directly
